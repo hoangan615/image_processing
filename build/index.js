@@ -22,6 +22,13 @@ app.get('/api/images', logger_1.default, (req, res) => {
         res.status(400).send(err.message);
     });
 });
+app.get('/api', logger_1.default, (req, res) => {
+    res.send('Welcome Image Processing API');
+});
+app.get('*', logger_1.default, (req, res) => {
+    res.send('Welcome Image Processing');
+});
 app.listen(port, () => {
     console.log(`server started at localhost:${port}`);
 });
+exports.default = app;

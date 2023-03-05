@@ -27,25 +27,20 @@ const resizeImage = (filename, options) => __awaiter(void 0, void 0, void 0, fun
     if (!(0, fileUtils_1.checkExistFile)(image.filePath)) {
         throw new Error('Image not found');
     }
-    // Check cache image exists, if not, resize the image
-    if (!(0, fileUtils_1.checkExistFile)(image.cacheFilePath)) {
+    // Check result image exists, if not, resize the image
+    if (!(0, fileUtils_1.checkExistFile)(image.resultFilePath)) {
         try {
             yield (0, sharp_1.default)(image.filePath)
                 .resize(options.size.width, options.size.height)
                 .jpeg()
-                .toFile(image.cacheFilePath);
+                .toFile(image.resultFilePath);
+            console.log(`${filename} was resized to {${options.size.width}, ${options.size.height}}`);
         }
         catch (err) {
             throw new Error('Cannot resize image');
         }
     }
-    // Using cache image & copy to result folder
-    try {
-        yield (0, fileUtils_1.useCacheFile)(image.cacheFilePath, image.resultFilePath);
-    }
-    catch (err) {
-        throw new Error('Cannot resize image');
-    }
+    console.log(`Result file ${image.resultFilePath}`);
     // Return result image path
     return image.resultFilePath;
 });
