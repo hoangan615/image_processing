@@ -47,7 +47,7 @@ export const getResizeImagePath = (
  * @param file The file path
  * @returns true if the file exists, false otherwise
  */
-export const checkExistFile = (file: string) => {
+export const checkExistFile = (file: string): boolean => {
   if (fs.existsSync(file)) {
     return true;
   }

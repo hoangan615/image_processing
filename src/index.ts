@@ -1,30 +1,55 @@
 import express from 'express';
 import logger from './middleware/logger';
 import { resizeImage } from './utils/imageUtils';
+import { isNumeric, isValidFileName } from './utils/numberValidate';
 
 const app = express();
 
 const port = 3000;
 
-app.get('/api/images', logger, (req, res) => {
-  resizeImage(req.query.filename as string, {
-    size: {
-      width: Number.parseInt(req.query.width as string) || 200,
-      height: Number.parseInt(req.query.height as string) || 200,
-    },
-  })
-    .then((file) => {
-      res.sendFile(file);
-    })
-    .catch((err) => {
-      res.status(400).send(err.message);
-    });
-});
+app.get(
+  '/api/images',
+  logger,
+  (req: express.Request, res: express.Response) => {
+    // Check input parameters
+    if (!req.query.filename || !req.query.width || !req.query.height) {
+      return res
+        .status(400)
+        .json({ error: 'Missing filename, height, or width.' });
+    }
+    if (!isValidFileName(req.query.filename as string)) {
+      return res.status(400).json({ error: 'Invalid Input for filename.' });
+    }
 
-app.get('/api', logger, (req, res) => {
+    if (
+      !isNumeric(req.query.width as string) ||
+      !isNumeric(req.query.height as string)
+    ) {
+      return res
+        .status(400)
+        .json({ error: 'Invalid Input for height or width.' });
+    }
+
+    // Resize the image
+    resizeImage(req.query.filename as string, {
+      size: {
+        width: Number.parseInt(req.query.width as string),
+        height: Number.parseInt(req.query.height as string),
+      },
+    })
+      .then((file: string) => {
+        res.sendFile(file);
+      })
+      .catch((err: Error) => {
+        res.status(400).json({ error: err.message });
+      });
+  }
+);
+
+app.get('/api', logger, (req: express.Request, res: express.Response): void => {
   res.send('Welcome Image Processing API');
 });
-app.get('*', logger, (req, res) => {
+app.get('*', logger, (req: express.Request, res: express.Response): void => {
   res.send('Welcome Image Processing');
 });
 

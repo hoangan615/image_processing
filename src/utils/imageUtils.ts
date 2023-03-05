@@ -34,7 +34,7 @@ export const resizeImage = async (
 
   // Check source image exists
   if (!checkExistFile(image.filePath)) {
-    throw new Error('Image not found');
+    throw new Error('Image not found!');
   }
 
   // Check result image exists, if not, resize the image
@@ -47,8 +47,9 @@ export const resizeImage = async (
       console.log(
         `${filename} was resized to {${options.size.width}, ${options.size.height}}`
       );
-    } catch (err) {
-      throw new Error('Cannot resize image');
+    } catch (err: unknown) {
+      console.log('Cannot resize image, error', err);
+      throw new Error(`Cannot resize image with input size`);
     }
   }
   console.log(`Result file ${image.resultFilePath}`);
